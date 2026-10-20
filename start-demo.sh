@@ -15,6 +15,7 @@ export DEMO_MODE=1
 export TRUSTNET_DB_PATH=backend/data/trustnet.db
 export TRUSTNET_DEMO_ALLOW_NEW_DEVICE=1
 export TRUSTNET_TOTP_KEY=local-demo-totp-key-change-this-32-chars
+export TRUSTNET_ALERT_EMAILS=sumukhbhat66@gmail.com
 export TRUSTNET_AUDIT_CHECKPOINT_KEY=local-demo-audit-key-change-this-32-chars
 export TRUSTNET_CORS_ORIGINS=http://localhost:8080,http://127.0.0.1:8080,http://localhost:8081,http://127.0.0.1:8081,http://localhost:5173,http://127.0.0.1:5173
 

@@ -24,6 +24,7 @@ set DEMO_MODE=1
 set TRUSTNET_DB_PATH=backend/data/trustnet.db
 set TRUSTNET_DEMO_ALLOW_NEW_DEVICE=1
 set TRUSTNET_TOTP_KEY=local-demo-totp-key-change-this-32-chars
+set TRUSTNET_ALERT_EMAILS=sumukhbhat66@gmail.com
 set TRUSTNET_AUDIT_CHECKPOINT_KEY=local-demo-audit-key-change-this-32-chars
 set TRUSTNET_CORS_ORIGINS=http://localhost:8080,http://127.0.0.1:8080,http://localhost:8081,http://127.0.0.1:8081,http://localhost:5173,http://127.0.0.1:5173
 
