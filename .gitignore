@@ -51,6 +51,7 @@ verification-report.txt
 # Raw datasets (never committed) and local state
 data/
 !backend/data/
+!src/data/
 backend/data/*
 !backend/data/.gitkeep
 backend/ml_models/*.joblib
