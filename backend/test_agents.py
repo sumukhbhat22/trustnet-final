@@ -426,9 +426,40 @@ class AgentPipelineTests(unittest.TestCase):
         reports = [m for m in sent if "agent report" in m["Subject"]]
         self.assertTrue(reports, [m["Subject"] for m in sent])
         self.assertIn("soc@example.com", {m["To"] for m in reports})
-        body = reports[0].get_content()
-        for section in ("WHAT THE INVESTIGATOR AGENT FOUND", "WHAT THE RESPONSE AGENT DID", "Rules fired:", "Incident Center:"):
+        self.assertFalse(any(m["To"].endswith(".local") for m in sent), "non-routable demo addresses must not be mailed")
+        body = reports[0].get_body(("plain",)).get_content()
+        for section in ("WHO AND WHERE", "WHAT THE INVESTIGATOR FOUND", "WHAT THE RESPONSE AGENT DID", "WAITING FOR A PERSON",
+                        "BLAST RADIUS", "LAST EVENTS", "AUDIT REFERENCE", "Open the incident:"):
             self.assertIn(section, body)
+        self.assertIn("hash ", body)
+        self.assertNotIn("Bearer", body)
+        page = reports[0].get_body(("html",)).get_content()
+        self.assertIn("Open the incident", page)
+
+    def test_follow_up_mail_after_human_approval_and_rejection(self):
+        import time
+        sent = []
+        notifier.set_transport_override(sent.append)
+        os.environ["TRUSTNET_ALERT_EMAILS"] = "soc@example.com"
+        try:
+            incident, _, action = self._pending("followup1")
+            self.client.post(f"/api/incidents/{incident['id']}/responses/{action['id']}/approve", headers=self.analyst)
+            incident2, _, action2 = self._pending("followup2")
+            self.client.post(f"/api/incidents/{incident2['id']}/responses/{action2['id']}/reject", json={"reason": "known"}, headers=self.analyst)
+            time.sleep(1.5)
+        finally:
+            os.environ.pop("TRUSTNET_ALERT_EMAILS", None)
+        subjects = [m["Subject"] for m in sent if m["To"] == "soc@example.com"]
+        self.assertTrue(any("quarantine_device approved" in s for s in subjects), subjects)
+        self.assertTrue(any("quarantine_device rejected" in s for s in subjects), subjects)
+
+    def test_report_html_escapes_untrusted_values(self):
+        from agents import incident_report
+        incident, _ = self.make_incident(user="a&b", failed_logins=3)
+        report = incident_report.build_report(incident["id"])
+        self.assertIsNotNone(report)
+        self.assertIn("a&amp;b", report["html"])
+        self.assertNotIn("a&b", report["html"])
 
     def test_mailer_failure_is_recorded_not_raised(self):
         def boom(_m): raise ConnectionError("smtp down")

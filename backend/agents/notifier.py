@@ -86,9 +86,25 @@ def staff_recipients() -> list[str]:
     return [row["email"] for row in rows]
 
 
+_NON_ROUTABLE_SUFFIXES = (".local", ".localhost", ".invalid")
+
+
+def _is_routable(address: str) -> bool:
+    """Seeded demo accounts use .local addresses that no mail server can deliver to."""
+    domain = address.rsplit("@", 1)[-1].lower()
+    return "@" in address and not domain.endswith(_NON_ROUTABLE_SUFFIXES)
+
+
+def send_incident_report(incident_id: str, stage: str = "initial", *, action_id: str | None = None) -> list[dict[str, Any]]:
+    """Email the detailed agent report (stage 'initial') or a short follow-up ('approved' / 'rejected')."""
+    from agents.incident_report import send_report  # lazy: the report builder imports the response agent
+    return send_report(incident_id, stage, action_id=action_id)
+
+
 def alert_recipients() -> list[str]:
     """Active admins/analysts plus any real mailboxes listed in TRUSTNET_ALERT_EMAILS (comma separated)."""
-    extra = [item.strip() for item in os.environ.get("TRUSTNET_ALERT_EMAILS", "").split(",") if "@" in item]
+    raw = ",".join(os.environ.get(name, "") for name in ("TRUSTNET_ALERT_EMAILS", "TRUSTNET_ALERT_RECIPIENTS"))
+    extra = [item.strip() for item in raw.split(",") if "@" in item]
     return list(dict.fromkeys([*staff_recipients(), *extra]))
 
 
@@ -137,7 +153,8 @@ def send_mfa_code(recipient: str, code: str) -> None:
     _deliver(message)
 
 
-def notify(incident_id: str | None, subject: str, body: str, *, recipients: list[str] | None = None, wait: bool = False) -> list[dict[str, Any]]:
+def notify(incident_id: str | None, subject: str, body: str, *, recipients: list[str] | None = None, wait: bool = False,
+           html_body: str | None = None) -> list[dict[str, Any]]:
     """Persist one notification per recipient and attempt email delivery when configured."""
     targets = recipients if recipients is not None else staff_recipients()
     subject = _clean_header(subject)
@@ -147,11 +164,14 @@ def notify(incident_id: str | None, subject: str, body: str, *, recipients: list
     for recipient in targets:
         recipient = _clean_header(recipient)
         key = _dedup_key(incident_id, subject, recipient)
+        routable = _is_routable(recipient)
         row = {
             "id": new_id("NTF"), "incident_id": incident_id, "channel": "email", "recipient": recipient,
             "subject": subject, "body": body[:8000], "created_at": now_iso(),
-            "status": "queued" if smtp_configured() else "skipped",
-            "error": None if smtp_configured() else "SMTP not configured; notification stored in-app only",
+            "status": "queued" if smtp_configured() and routable else "skipped",
+            "error": None if smtp_configured() and routable else (
+                "SMTP not configured; notification stored in-app only" if not smtp_configured()
+                else "Non-routable demo address; notification stored in-app only"),
         }
         with _notify_lock:  # persistent dedup: same incident+subject+recipient inside the cooldown is stored/e-mailed once
             connection = get_db_connection()
@@ -174,6 +194,8 @@ def notify(incident_id: str | None, subject: str, body: str, *, recipients: list
             message["From"] = _clean_header(os.environ.get("TRUSTNET_SMTP_FROM", "trustnet@localhost"))
             message["To"] = recipient
             message.set_content(row["body"])
+            if html_body:
+                message.add_alternative(html_body, subtype="html")
             thread = threading.Thread(target=_send_and_mark, args=(row["id"], message), daemon=True)
             thread.start()
             threads.append(thread)

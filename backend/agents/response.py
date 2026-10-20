@@ -353,10 +353,8 @@ def execute(action: dict[str, Any], *, actor: str, mode: str, extra: dict[str, A
                    "safeguards": action["safeguards"], **(extra or {})})
     log_activity(incident["id"], "response", "executed", f"{action['action']} executed ({mode}) by {actor}", {"response_id": action["id"], **outcome})
     if mode == "human":  # automatic runs are reported by the orchestrator once the whole pipeline finished
-        from agents.orchestrator import send_incident_report
-        fresh = get_incident(incident["id"])
-        if fresh and fresh.get("investigator_findings"):
-            send_incident_report(fresh, fresh["investigator_findings"], action, f"approval by {actor}")
+        from agents.notifier import send_incident_report
+        send_incident_report(incident["id"], "approved", action_id=action["id"])
     return action
 
 
@@ -438,4 +436,6 @@ def reject(action_id: str, approver: dict[str, Any], reason: str = "") -> dict[s
     audit("response", "rejected", incident=incident, actor=f"user:{approver['id']}",
           payload={"response_id": action["id"], "action": action["action"], "reason": reason[:300]})
     log_activity(action["incident_id"], "response", "rejected", f"{action['action']} rejected by {approver['id']}", {"response_id": action["id"]})
+    from agents.notifier import send_incident_report
+    send_incident_report(action["incident_id"], "rejected", action_id=action["id"])
     return action
