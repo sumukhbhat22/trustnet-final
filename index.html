@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>TrustNet AI — Secure Access</title>
+    <meta name="description" content="TrustNet AI Guardian - Advanced ML-powered security threat detection and analysis" />
+    <meta name="author" content="TrustNet" />
+
+    <meta property="og:title" content="TrustNet AI Guardian" />
+    <meta property="og:description" content="Advanced ML-powered security threat detection and analysis" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script>
+      // Dev-time shim: ensure React Refresh preamble functions exist
+      // Prevents '@vitejs/plugin-react-swc can't detect preamble' runtime error
+      if (typeof window !== 'undefined') {
+        if (!window.$RefreshReg$) window.$RefreshReg$ = function() {};
+        if (!window.$RefreshSig$) window.$RefreshSig$ = function() { return function() {}; };
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

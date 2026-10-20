@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pydantic
+numpy
+scikit-learn
+pandas
+python-multipart
+joblib
+httpx
+websockets
+requests
+bcrypt
+PyJWT
+reportlab
+cryptography

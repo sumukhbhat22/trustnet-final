@@ -1,0 +1,76 @@
+{
+  "anomaly_class_definition": "label -1",
+  "comparisons": {
+    "isolation_forest": {
+      "mean_anomaly_score": 0.4292,
+      "method": "OptimizedAnomalyDetector trained on training split",
+      "metrics": {
+        "accuracy": 0.994,
+        "actual_anomalies": 150,
+        "alerts": 156,
+        "confusion_matrix_labels_0_1": [
+          [
+            844,
+            6
+          ],
+          [
+            0,
+            150
+          ]
+        ],
+        "f1": 0.9804,
+        "false_alerts": 6,
+        "false_positive_rate": 0.0071,
+        "missed_anomalies": 0,
+        "precision": 0.9615,
+        "recall": 1.0,
+        "true_positive_incidents": 150
+      },
+      "training_parameters": {
+        "contamination": 0.15,
+        "max_samples": 256,
+        "n_estimators": 300,
+        "scaler": "RobustScaler"
+      }
+    },
+    "rules_only_baseline": {
+      "method": "fixed transparent thresholds; not trained",
+      "metrics": {
+        "accuracy": 0.998,
+        "actual_anomalies": 150,
+        "alerts": 152,
+        "confusion_matrix_labels_0_1": [
+          [
+            848,
+            2
+          ],
+          [
+            0,
+            150
+          ]
+        ],
+        "f1": 0.9934,
+        "false_alerts": 2,
+        "false_positive_rate": 0.0024,
+        "missed_anomalies": 0,
+        "precision": 0.9868,
+        "recall": 1.0,
+        "true_positive_incidents": 150
+      }
+    }
+  },
+  "data_notice": "Fictional generated records only; metrics are not estimates of operational detection accuracy.",
+  "evaluation": "synthetic_holdout_comparison",
+  "feature_order": [
+    "session_duration",
+    "data_volume",
+    "api_calls",
+    "geo_distance",
+    "login_hour"
+  ],
+  "sample_count": 5000,
+  "seed": 42,
+  "split": "stratified 80/20; random_state=42",
+  "test_count": 1000,
+  "train_count": 4000
+}

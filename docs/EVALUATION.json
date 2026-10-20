@@ -1,0 +1,512 @@
+{
+  "counts_per_seed": [
+    {
+      "attack_campaigns": 16,
+      "attack_sessions": 46,
+      "test_rows": 323,
+      "train_rows": 554
+    },
+    {
+      "attack_campaigns": 16,
+      "attack_sessions": 42,
+      "test_rows": 328,
+      "train_rows": 546
+    },
+    {
+      "attack_campaigns": 16,
+      "attack_sessions": 44,
+      "test_rows": 317,
+      "train_rows": 553
+    },
+    {
+      "attack_campaigns": 16,
+      "attack_sessions": 46,
+      "test_rows": 328,
+      "train_rows": 561
+    },
+    {
+      "attack_campaigns": 16,
+      "attack_sessions": 40,
+      "test_rows": 334,
+      "train_rows": 574
+    }
+  ],
+  "data_statement": {
+    "part_A_real": "Numbers in `real_data` (if present) come from one public dataset sample with a time-based split.",
+    "part_B_synthetic": "ALL numbers in `synthetic` are from fictional generated users; they are not real-world accuracy."
+  },
+  "design": {
+    "alert_at": 50,
+    "days": 21,
+    "fusion_points": {
+      "known_bad_ip": 40,
+      "model": 30,
+      "rules": 40,
+      "untrusted_device": 20
+    },
+    "held_out_days": 7,
+    "incident_window_min": 1440,
+    "scenarios": [
+      "stolen_credentials",
+      "insider_exfiltration",
+      "slow_and_low",
+      "mimicry"
+    ],
+    "train_days": 14,
+    "users": 20
+  },
+  "evaluation": "trustnet_detection_evaluation",
+  "real_data": {
+    "reason": "No dataset provided. Run: python evaluate.py --real-data ../data/raw/rba-dataset.csv",
+    "status": "blocked"
+  },
+  "recall_by_scenario_mean": {
+    "ablation_no_correlation": {
+      "insider_exfiltration": 1.0,
+      "mimicry": 0.0748,
+      "slow_and_low": 0.0784,
+      "stolen_credentials": 1.0
+    },
+    "ablation_no_device_trust": {
+      "insider_exfiltration": 1.0,
+      "mimicry": 0.0167,
+      "slow_and_low": 0.0167,
+      "stolen_credentials": 1.0
+    },
+    "ablation_no_known_bad": {
+      "insider_exfiltration": 1.0,
+      "mimicry": 0.0167,
+      "slow_and_low": 0.0784,
+      "stolen_credentials": 1.0
+    },
+    "full_pipeline": {
+      "insider_exfiltration": 1.0,
+      "mimicry": 0.0748,
+      "slow_and_low": 0.0784,
+      "stolen_credentials": 1.0
+    },
+    "isolation_forest_alone": {
+      "insider_exfiltration": 1.0,
+      "mimicry": 0.0167,
+      "slow_and_low": 0.063,
+      "stolen_credentials": 1.0
+    },
+    "rules_only_baseline": {
+      "insider_exfiltration": 1.0,
+      "mimicry": 0.0167,
+      "slow_and_low": 0.0774,
+      "stolen_credentials": 1.0
+    }
+  },
+  "seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "synthetic": {
+    "ablation_no_correlation": {
+      "alerts": {
+        "mean": 29.6,
+        "n": 5,
+        "std": 1.3565
+      },
+      "campaigns_detected": {
+        "mean": 9.6,
+        "n": 5,
+        "std": 0.8
+      },
+      "campaigns_total": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 0.5955,
+        "n": 5,
+        "std": 0.0415
+      },
+      "false_positive_rate": {
+        "mean": 0.0275,
+        "n": 5,
+        "std": 0.0055
+      },
+      "fn": {
+        "mean": 21.8,
+        "n": 5,
+        "std": 2.4819
+      },
+      "fp": {
+        "mean": 7.8,
+        "n": 5,
+        "std": 1.7205
+      },
+      "incidents": {
+        "mean": 29.6,
+        "n": 5,
+        "std": 1.3565
+      },
+      "mean_time_to_first_response_min": {
+        "mean": 99.6681,
+        "n": 5,
+        "std": 111.0588
+      },
+      "precision": {
+        "mean": 0.737,
+        "n": 5,
+        "std": 0.0563
+      },
+      "recall": {
+        "mean": 0.5008,
+        "n": 5,
+        "std": 0.0415
+      },
+      "tn": {
+        "mean": 274.6,
+        "n": 5,
+        "std": 5.7827
+      },
+      "tp": {
+        "mean": 21.8,
+        "n": 5,
+        "std": 1.7205
+      }
+    },
+    "ablation_no_device_trust": {
+      "alerts": {
+        "mean": 28.0,
+        "n": 5,
+        "std": 2.0
+      },
+      "campaigns_detected": {
+        "mean": 8.4,
+        "n": 5,
+        "std": 0.4899
+      },
+      "campaigns_total": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 0.5689,
+        "n": 5,
+        "std": 0.0419
+      },
+      "false_positive_rate": {
+        "mean": 0.0268,
+        "n": 5,
+        "std": 0.0051
+      },
+      "fn": {
+        "mean": 23.2,
+        "n": 5,
+        "std": 2.3152
+      },
+      "fp": {
+        "mean": 7.6,
+        "n": 5,
+        "std": 1.6248
+      },
+      "incidents": {
+        "mean": 14.6,
+        "n": 5,
+        "std": 1.9596
+      },
+      "mean_time_to_first_response_min": {
+        "mean": 37.4072,
+        "n": 5,
+        "std": 66.4564
+      },
+      "precision": {
+        "mean": 0.7289,
+        "n": 5,
+        "std": 0.0569
+      },
+      "recall": {
+        "mean": 0.468,
+        "n": 5,
+        "std": 0.0438
+      },
+      "tn": {
+        "mean": 274.8,
+        "n": 5,
+        "std": 5.7411
+      },
+      "tp": {
+        "mean": 20.4,
+        "n": 5,
+        "std": 2.0591
+      }
+    },
+    "ablation_no_known_bad": {
+      "alerts": {
+        "mean": 29.0,
+        "n": 5,
+        "std": 1.8974
+      },
+      "campaigns_detected": {
+        "mean": 9.0,
+        "n": 5,
+        "std": 0.6325
+      },
+      "campaigns_total": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 0.5839,
+        "n": 5,
+        "std": 0.0403
+      },
+      "false_positive_rate": {
+        "mean": 0.0275,
+        "n": 5,
+        "std": 0.0055
+      },
+      "fn": {
+        "mean": 22.4,
+        "n": 5,
+        "std": 2.7276
+      },
+      "fp": {
+        "mean": 7.8,
+        "n": 5,
+        "std": 1.7205
+      },
+      "incidents": {
+        "mean": 15.4,
+        "n": 5,
+        "std": 2.4166
+      },
+      "mean_time_to_first_response_min": {
+        "mean": 102.6712,
+        "n": 5,
+        "std": 128.7297
+      },
+      "precision": {
+        "mean": 0.7322,
+        "n": 5,
+        "std": 0.0538
+      },
+      "recall": {
+        "mean": 0.4873,
+        "n": 5,
+        "std": 0.0451
+      },
+      "tn": {
+        "mean": 274.6,
+        "n": 5,
+        "std": 5.7827
+      },
+      "tp": {
+        "mean": 21.2,
+        "n": 5,
+        "std": 1.7205
+      }
+    },
+    "full_pipeline": {
+      "alerts": {
+        "mean": 29.6,
+        "n": 5,
+        "std": 1.3565
+      },
+      "campaigns_detected": {
+        "mean": 9.6,
+        "n": 5,
+        "std": 0.8
+      },
+      "campaigns_total": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 0.5955,
+        "n": 5,
+        "std": 0.0415
+      },
+      "false_positive_rate": {
+        "mean": 0.0275,
+        "n": 5,
+        "std": 0.0055
+      },
+      "fn": {
+        "mean": 21.8,
+        "n": 5,
+        "std": 2.4819
+      },
+      "fp": {
+        "mean": 7.8,
+        "n": 5,
+        "std": 1.7205
+      },
+      "incidents": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 2.0976
+      },
+      "mean_time_to_first_response_min": {
+        "mean": 99.6681,
+        "n": 5,
+        "std": 111.0588
+      },
+      "precision": {
+        "mean": 0.737,
+        "n": 5,
+        "std": 0.0563
+      },
+      "recall": {
+        "mean": 0.5008,
+        "n": 5,
+        "std": 0.0415
+      },
+      "tn": {
+        "mean": 274.6,
+        "n": 5,
+        "std": 5.7827
+      },
+      "tp": {
+        "mean": 21.8,
+        "n": 5,
+        "std": 1.7205
+      }
+    },
+    "isolation_forest_alone": {
+      "alerts": {
+        "mean": 32.0,
+        "n": 5,
+        "std": 1.6733
+      },
+      "campaigns_detected": {
+        "mean": 9.0,
+        "n": 5,
+        "std": 0.6325
+      },
+      "campaigns_total": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 0.5547,
+        "n": 5,
+        "std": 0.0397
+      },
+      "false_positive_rate": {
+        "mean": 0.0389,
+        "n": 5,
+        "std": 0.0032
+      },
+      "fn": {
+        "mean": 22.6,
+        "n": 5,
+        "std": 2.6533
+      },
+      "fp": {
+        "mean": 11.0,
+        "n": 5,
+        "std": 1.0954
+      },
+      "incidents": {
+        "mean": 18.2,
+        "n": 5,
+        "std": 2.0396
+      },
+      "mean_time_to_first_response_min": {
+        "mean": 99.2785,
+        "n": 5,
+        "std": 127.1338
+      },
+      "precision": {
+        "mean": 0.6554,
+        "n": 5,
+        "std": 0.0392
+      },
+      "recall": {
+        "mean": 0.4823,
+        "n": 5,
+        "std": 0.0475
+      },
+      "tn": {
+        "mean": 271.4,
+        "n": 5,
+        "std": 6.5299
+      },
+      "tp": {
+        "mean": 21.0,
+        "n": 5,
+        "std": 2.0
+      }
+    },
+    "rules_only_baseline": {
+      "alerts": {
+        "mean": 34.2,
+        "n": 5,
+        "std": 3.6551
+      },
+      "campaigns_detected": {
+        "mean": 9.0,
+        "n": 5,
+        "std": 0.6325
+      },
+      "campaigns_total": {
+        "mean": 16.0,
+        "n": 5,
+        "std": 0.0
+      },
+      "f1": {
+        "mean": 0.5444,
+        "n": 5,
+        "std": 0.0223
+      },
+      "false_positive_rate": {
+        "mean": 0.0459,
+        "n": 5,
+        "std": 0.0078
+      },
+      "fn": {
+        "mean": 22.4,
+        "n": 5,
+        "std": 2.5768
+      },
+      "fp": {
+        "mean": 13.0,
+        "n": 5,
+        "std": 2.3664
+      },
+      "incidents": {
+        "mean": 19.8,
+        "n": 5,
+        "std": 2.4
+      },
+      "mean_time_to_first_response_min": {
+        "mean": 215.6265,
+        "n": 5,
+        "std": 197.166
+      },
+      "precision": {
+        "mean": 0.6226,
+        "n": 5,
+        "std": 0.0388
+      },
+      "recall": {
+        "mean": 0.4872,
+        "n": 5,
+        "std": 0.0432
+      },
+      "tn": {
+        "mean": 269.4,
+        "n": 5,
+        "std": 6.0531
+      },
+      "tp": {
+        "mean": 21.2,
+        "n": 5,
+        "std": 1.7205
+      }
+    }
+  }
+}

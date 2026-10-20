@@ -1,0 +1,104 @@
+{
+  "notice": "Fictional synthetic scenarios only; descriptions do not execute attacks.",
+  "scenario_count": 5,
+  "scenarios": [
+    {
+      "expected_attack_type": "unknown",
+      "expected_controls": [
+        "record normal telemetry",
+        "do not block automatically"
+      ],
+      "expected_severity": "low",
+      "id": "benign_baseline",
+      "signals": {
+        "after_hours": false,
+        "api_calls_5m": 24,
+        "data_volume_mb": 18,
+        "failed_logins": 0,
+        "sensitive_export": false,
+        "successful_logins": 1,
+        "unknown_device": false
+      },
+      "title": "Normal employee session"
+    },
+    {
+      "expected_attack_type": "brute_force",
+      "expected_controls": [
+        "raise credential attack signal",
+        "restrict or step up authentication per policy"
+      ],
+      "expected_severity": "high",
+      "id": "brute_force",
+      "signals": {
+        "after_hours": false,
+        "api_calls_5m": 32,
+        "data_volume_mb": 0,
+        "failed_logins": 8,
+        "sensitive_export": false,
+        "successful_logins": 0,
+        "unknown_device": true
+      },
+      "title": "Repeated failed login attempts"
+    },
+    {
+      "expected_attack_type": "stolen_credentials",
+      "expected_controls": [
+        "require MFA step-up",
+        "create evidence-backed incident",
+        "queue irreversible actions for approval"
+      ],
+      "expected_severity": "critical",
+      "id": "stolen_credentials",
+      "signals": {
+        "after_hours": true,
+        "api_calls_5m": 41,
+        "data_volume_mb": 22,
+        "failed_logins": 3,
+        "sensitive_export": false,
+        "successful_logins": 1,
+        "unknown_device": true
+      },
+      "title": "Successful login from an untrusted device after failures"
+    },
+    {
+      "expected_attack_type": "data_exfiltration",
+      "expected_controls": [
+        "raise data-exfiltration signal",
+        "preserve evidence",
+        "require authorized review"
+      ],
+      "expected_severity": "critical",
+      "id": "data_exfiltration",
+      "signals": {
+        "after_hours": false,
+        "api_calls_5m": 95,
+        "data_volume_mb": 850,
+        "failed_logins": 0,
+        "sensitive_export": true,
+        "successful_logins": 1,
+        "unknown_device": false
+      },
+      "title": "Large sensitive export"
+    },
+    {
+      "expected_attack_type": "after_hours_insider",
+      "expected_controls": [
+        "raise after-hours access signal",
+        "preserve evidence",
+        "require analyst review"
+      ],
+      "expected_severity": "high",
+      "id": "after_hours_sensitive_access",
+      "signals": {
+        "after_hours": true,
+        "api_calls_5m": 38,
+        "data_volume_mb": 65,
+        "failed_logins": 0,
+        "sensitive_export": true,
+        "successful_logins": 1,
+        "unknown_device": false
+      },
+      "title": "Sensitive resource accessed after hours"
+    }
+  ]
+}

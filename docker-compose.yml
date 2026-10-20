@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      # Safe default is production. For a local demo set TRUSTNET_ENV=development and DEMO_MODE=1 in .env.
+      TRUSTNET_ENV: ${TRUSTNET_ENV:-production}
+      TRUSTNET_BOOTSTRAP_ADMIN_EMAIL: ${TRUSTNET_BOOTSTRAP_ADMIN_EMAIL:-}
+      TRUSTNET_BOOTSTRAP_ADMIN_PASSWORD: ${TRUSTNET_BOOTSTRAP_ADMIN_PASSWORD:-}
+      TRUSTNET_JWT_SECRET: ${TRUSTNET_JWT_SECRET:?Set TRUSTNET_JWT_SECRET in .env}
+      TRUSTNET_DB_PATH: /app/backend/data/trustnet.db
+      DEMO_MODE: ${DEMO_MODE:-0}
+      TRUSTNET_CORS_ORIGINS: ${TRUSTNET_CORS_ORIGINS:-http://localhost:8080}
+    volumes:
+      - trustnet-data:/app/backend/data
+      - trustnet-models:/app/backend/models/saved_models
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/health', timeout=3)"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_ML_API_URL: ${VITE_ML_API_URL:-http://localhost:8010/api}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+volumes:
+  trustnet-data:
+  trustnet-models:

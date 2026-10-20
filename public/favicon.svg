@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00e5cc"/>
+      <stop offset="100%" stop-color="#0088aa"/>
+    </linearGradient>
+    <linearGradient id="lockGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#b0f0e8"/>
+    </linearGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M32 4 L56 16 V34 C56 48 44 58 32 62 C20 58 8 48 8 34 V16 Z" fill="url(#shieldGrad)" opacity="0.9"/>
+  <path d="M32 8 L52 18 V34 C52 46 42 54 32 58 C22 54 12 46 12 34 V18 Z" fill="#0a1628" opacity="0.85"/>
+  <!-- Lock icon inside -->
+  <rect x="25" y="30" width="14" height="12" rx="2" fill="url(#lockGrad)" opacity="0.9"/>
+  <path d="M28 30 V26 C28 22.7 29.8 20 32 20 C34.2 20 36 22.7 36 26 V30" stroke="url(#lockGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="32" cy="36" r="1.8" fill="#0a1628"/>
+  <!-- AI dot accents -->
+  <circle cx="22" cy="22" r="1.5" fill="#00e5cc" opacity="0.6"/>
+  <circle cx="42" cy="22" r="1.5" fill="#00e5cc" opacity="0.6"/>
+  <circle cx="32" cy="48" r="1.5" fill="#00e5cc" opacity="0.6"/>
+</svg>
