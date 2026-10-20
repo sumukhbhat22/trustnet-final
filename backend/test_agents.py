@@ -412,6 +412,24 @@ class AgentPipelineTests(unittest.TestCase):
         rows = notifier.list_notifications(5)
         self.assertEqual(rows[0]["status"], "sent")
 
+    def test_high_severity_incident_emails_detailed_agent_report(self):
+        import time
+        sent = []
+        notifier.set_transport_override(sent.append)
+        os.environ["TRUSTNET_ALERT_EMAILS"] = "soc@example.com"
+        try:
+            incident, _ = self.make_incident(user="report1", failed_logins=3)
+            self.assertIn(get_incident(incident["id"])["severity"].lower(), {"high", "critical"})
+            time.sleep(1.5)
+        finally:
+            os.environ.pop("TRUSTNET_ALERT_EMAILS", None)
+        reports = [m for m in sent if "agent report" in m["Subject"]]
+        self.assertTrue(reports, [m["Subject"] for m in sent])
+        self.assertIn("soc@example.com", {m["To"] for m in reports})
+        body = reports[0].get_content()
+        for section in ("WHAT THE INVESTIGATOR AGENT FOUND", "WHAT THE RESPONSE AGENT DID", "Rules fired:", "Incident Center:"):
+            self.assertIn(section, body)
+
     def test_mailer_failure_is_recorded_not_raised(self):
         def boom(_m): raise ConnectionError("smtp down")
         notifier.set_transport_override(boom)

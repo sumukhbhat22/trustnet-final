@@ -14,6 +14,22 @@ backend_path = str(Path(__file__).parent)
 if backend_path not in sys.path:
     sys.path.insert(0, backend_path)
 
+
+def _load_env_file() -> None:
+    """Read KEY=VALUE pairs from the project .env without overriding variables already set."""
+    env_path = Path(__file__).parent.parent / ".env"
+    if not env_path.is_file():
+        return
+    for raw in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+
+
+_load_env_file()
+
 from fastapi import FastAPI, APIRouter, HTTPException, Body, Request, Response, WebSocket, WebSocketDisconnect, Depends
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer

@@ -86,6 +86,12 @@ def staff_recipients() -> list[str]:
     return [row["email"] for row in rows]
 
 
+def alert_recipients() -> list[str]:
+    """Active admins/analysts plus any real mailboxes listed in TRUSTNET_ALERT_EMAILS (comma separated)."""
+    extra = [item.strip() for item in os.environ.get("TRUSTNET_ALERT_EMAILS", "").split(",") if "@" in item]
+    return list(dict.fromkeys([*staff_recipients(), *extra]))
+
+
 COOLDOWN_MINUTES = int(os.environ.get("TRUSTNET_NOTIFY_COOLDOWN_MINUTES", "15"))
 # Serialises the dedup check + insert so concurrent callers cannot both store the same notification.
 _notify_lock = threading.Lock()
@@ -143,7 +149,7 @@ def notify(incident_id: str | None, subject: str, body: str, *, recipients: list
         key = _dedup_key(incident_id, subject, recipient)
         row = {
             "id": new_id("NTF"), "incident_id": incident_id, "channel": "email", "recipient": recipient,
-            "subject": subject, "body": body[:4000], "created_at": now_iso(),
+            "subject": subject, "body": body[:8000], "created_at": now_iso(),
             "status": "queued" if smtp_configured() else "skipped",
             "error": None if smtp_configured() else "SMTP not configured; notification stored in-app only",
         }

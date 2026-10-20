@@ -352,6 +352,11 @@ def execute(action: dict[str, Any], *, actor: str, mode: str, extra: dict[str, A
           payload={"response_id": action["id"], "action": action["action"], "target": action["target"], "mode": mode, "outcome": outcome,
                    "safeguards": action["safeguards"], **(extra or {})})
     log_activity(incident["id"], "response", "executed", f"{action['action']} executed ({mode}) by {actor}", {"response_id": action["id"], **outcome})
+    if mode == "human":  # automatic runs are reported by the orchestrator once the whole pipeline finished
+        from agents.orchestrator import send_incident_report
+        fresh = get_incident(incident["id"])
+        if fresh and fresh.get("investigator_findings"):
+            send_incident_report(fresh, fresh["investigator_findings"], action, f"approval by {actor}")
     return action
 
 
