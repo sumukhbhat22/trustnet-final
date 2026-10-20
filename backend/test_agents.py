@@ -417,16 +417,18 @@ class AgentPipelineTests(unittest.TestCase):
         sent = []
         notifier.set_transport_override(sent.append)
         os.environ["TRUSTNET_ALERT_EMAILS"] = "soc@example.com"
+        os.environ["TRUSTNET_SMTP_HOST"] = "smtp.invalid"  # enables the alert-list rule; delivery still goes to the fake transport
         try:
             incident, _ = self.make_incident(user="report1", failed_logins=3)
             self.assertIn(get_incident(incident["id"])["severity"].lower(), {"high", "critical"})
             time.sleep(1.5)
         finally:
             os.environ.pop("TRUSTNET_ALERT_EMAILS", None)
+            os.environ.pop("TRUSTNET_SMTP_HOST", None)
         reports = [m for m in sent if "agent report" in m["Subject"]]
         self.assertTrue(reports, [m["Subject"] for m in sent])
         self.assertIn("soc@example.com", {m["To"] for m in reports})
-        self.assertFalse(any(m["To"].endswith(".local") for m in sent), "non-routable demo addresses must not be mailed")
+        self.assertEqual({m["To"] for m in sent}, {"soc@example.com"}, "with an alert list set, only it receives real mail")
         body = reports[0].get_body(("plain",)).get_content()
         for section in ("WHO AND WHERE", "WHAT THE INVESTIGATOR FOUND", "WHAT THE RESPONSE AGENT DID", "WAITING FOR A PERSON",
                         "BLAST RADIUS", "LAST EVENTS", "AUDIT REFERENCE", "Open the incident:"):

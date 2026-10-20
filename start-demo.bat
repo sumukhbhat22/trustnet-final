@@ -20,6 +20,7 @@ if not exist "node_modules" (
 )
 
 set TRUSTNET_ENV=development
+set DEMO_MODE=1
 set TRUSTNET_DB_PATH=backend/data/trustnet.db
 set TRUSTNET_DEMO_ALLOW_NEW_DEVICE=1
 set TRUSTNET_TOTP_KEY=local-demo-totp-key-change-this-32-chars

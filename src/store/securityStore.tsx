@@ -153,6 +153,8 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // Step 2: Escalate risk score
     setTimeout(() => {
+      // Real backend incident (admin + DEMO_MODE only); rejection just leaves the on-screen simulation.
+      void mlBackendService.replayDemoScenario('stolen_credentials').catch(() => undefined);
       setState(prev => ({
         ...prev,
         systemRiskScore: 94,

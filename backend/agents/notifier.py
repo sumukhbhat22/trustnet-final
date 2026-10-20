@@ -89,10 +89,18 @@ def staff_recipients() -> list[str]:
 _NON_ROUTABLE_SUFFIXES = (".local", ".localhost", ".invalid")
 
 
+def _alert_allowlist() -> set[str]:
+    raw = ",".join(os.environ.get(name, "") for name in ("TRUSTNET_ALERT_EMAILS", "TRUSTNET_ALERT_RECIPIENTS"))
+    return {item.strip().lower() for item in raw.split(",") if "@" in item}
+
+
 def _is_routable(address: str) -> bool:
-    """Seeded demo accounts use .local addresses that no mail server can deliver to."""
+    """Seeded demo accounts use fake or third-party addresses; when an alert list is set, only it receives real mail."""
     domain = address.rsplit("@", 1)[-1].lower()
-    return "@" in address and not domain.endswith(_NON_ROUTABLE_SUFFIXES)
+    if "@" not in address or domain.endswith(_NON_ROUTABLE_SUFFIXES):
+        return False
+    allow = _alert_allowlist() if os.environ.get("TRUSTNET_SMTP_HOST") else set()
+    return not allow or address.lower() in allow
 
 
 def send_incident_report(incident_id: str, stage: str = "initial", *, action_id: str | None = None) -> list[dict[str, Any]]:
@@ -171,7 +179,7 @@ def notify(incident_id: str | None, subject: str, body: str, *, recipients: list
             "status": "queued" if smtp_configured() and routable else "skipped",
             "error": None if smtp_configured() and routable else (
                 "SMTP not configured; notification stored in-app only" if not smtp_configured()
-                else "Non-routable demo address; notification stored in-app only"),
+                else "Not an alert recipient or not a deliverable address; notification stored in-app only"),
         }
         with _notify_lock:  # persistent dedup: same incident+subject+recipient inside the cooldown is stored/e-mailed once
             connection = get_db_connection()

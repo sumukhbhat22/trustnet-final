@@ -11,6 +11,7 @@ command -v npm >/dev/null || { echo "npm not found"; exit 1; }
 [ -d node_modules ] || npm install
 
 export TRUSTNET_ENV=development
+export DEMO_MODE=1
 export TRUSTNET_DB_PATH=backend/data/trustnet.db
 export TRUSTNET_DEMO_ALLOW_NEW_DEVICE=1
 export TRUSTNET_TOTP_KEY=local-demo-totp-key-change-this-32-chars
